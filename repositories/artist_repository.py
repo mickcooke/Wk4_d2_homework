@@ -3,16 +3,19 @@ from db.run_sql import run_sql
 from models.artist import Artist
 
 def select_all():
-    artists=[]
+    artists = []
 
-
-    sql="SELECT * FROM artists"
+    sql = "SELECT * FROM artists"
     results = run_sql(sql)
 
     #process list of dictionary of users 
 
     for row in results:
-        artist = Artist(row['first_name'], row['last_name'], row['id'])
+        artist = Artist(
+            row['first_name'], 
+            row['last_name'], 
+            row['id'])
+        
         artists.append(artist)
     return artists
 
@@ -21,22 +24,22 @@ def select(id):
     artist = None
     sql = "SELECT * FROM artists WHERE id = %s"
     values = [id]
-    result = run_sql(sql, values)[0]
+    results = run_sql(sql, values)
 
-    if result is not None:
-
+    if results:
+        result = results[0]
         artist = Artist(
             result["first_name"],
             result["last_name"],
             result["id"])
         
-        return artist
+    return artist
 
 def save(artist):
     sql = "INSERT INTO artists (first_name, last_name) VALUES (%s, %s) RETURNING *"
     values =[artist.first_name, artist.last_name]
     result = run_sql(sql, values)
-    id = result[0]["id"]
+    id = result [0]["id"]
     artist.id = id 
     return artist
 

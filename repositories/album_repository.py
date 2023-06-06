@@ -5,7 +5,6 @@ from models.album import Album
 import repositories.artist_repository as artist_repository 
 
 def select_all():  
-    # pdb.set_trace()
     albums = [] 
 
     sql = "SELECT * FROM albums"
@@ -23,33 +22,28 @@ def select_all():
         albums.append(album)
     return albums
 
-def select(id):
-    task = None
-    sql = "SELECT * FROM albums WHERE id = %s"
-    values = [id]
-    result = run_sql(sql, values)[0]
-
-    if result is not None:
-        artist = artist_repository.select(result["artist_id"])
-        album = Album(
-                result['title'], 
-                result['genre'],
-                artist,
-                result['id'])
-
-        
-        return album
-
 def save(album):
     # sql statement like INSERT INTO
     sql = "INSERT INTO albums (title, genre, artist_id) VALUES (%s, %s, %s) RETURNING *"
     values =[album.title, album.genre, album.artist.id] 
     # pass it into run_sql()
-    # pdb.set_trace()
     result = run_sql(sql, values)
     id = result [0]["id"] 
     album.id = id
     return album  
+
+def select(id):
+    album = None
+    sql = "SELECT * FROM albums WHERE id = %s"
+    values = [id]
+    results = run_sql(sql, values)
+
+    if results:
+        result = results[0]
+        artist = artist_repository.select(result['artist_id'])
+        album = Album(result['title'], result['genre'], artist, result['id'] )
+
+    return album
 
 def delete_all():
     sql = "DELETE FROM albums"
