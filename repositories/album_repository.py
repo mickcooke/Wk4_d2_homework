@@ -54,19 +54,20 @@ def delete(id):
     values = [id]
     run_sql(sql, values)
 
-# def update(task):
-#     sql ="UPDATE tasks SET (description, user_id, duration, completed) = (%s, %s, %s, %s) WHERE id = %s"
-#     values = [task.description, task.user.id, task.duration, task.completed, task.id]
-#     run_sql(sql, values)
+def update(album):
+    sql ="UPDATE albums SET (title, genre, artist_id) = (%s, %s, %s) WHERE id = %s"
+    values = [album.title, album.genre, album.artist.id, album.id]
+    run_sql(sql, values)
 
-# def tasks_for_user(user):
-#     tasks =[]
+def albums_by_artist(artist):
+    albums =[]
 
-#     sql = "SELECT * FROM tasks WHERE user_id =%s"
-#     values = [user.id]
-#     results = run_sql(sql, values)
+    sql = "SELECT * FROM albums WHERE artist_id =%s"
+    values = [artist.id]
+    results = run_sql(sql, values)
 
-#     for row in results:
-#         task = Task(row["description"], user, row["duration"], row["completed"], row["id"])
-#         tasks.append(task)
-#     return tasks 
+    for result in results:
+        artist = artist_repository.select(result['artist_id'])
+        album = Album(result['title'], result['genre'], artist, result['id'] )
+        albums.append(album)
+    return albums 
